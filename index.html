@@ -1,10 +1,53 @@
+
+
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <!-- This script loads the Appian Web components; change it to your Appian server's domain -->
-    <header class="head" id="top"><script src="https://presales.appiancloud.com/suite/tempo/tempo.nocache.js"></script>
+    <meta charset="utf-8">
+    <title>Task List Demo</title>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://presales.appiancloud.com/suite/tempo/tempo.nocache.js"></script>
+    <script>
+      function showTask(taskId) {
+        $("#tasks").empty();
+        $('<appian-task />').attr("taskId", taskId).on("submit", handleSubmit).appendTo("#tasks");
+      }
+
+      function handleSubmit() {
+        $("#tasks").empty();
+        showTaskList();
+      }
+
+      function showTaskList() {
+        $.ajax({
+          type: 'GET',
+          url: "https://presales.appiancloud.com/suite/plugins/servlet/tasklist",
+          dataType:"json",
+          contentType: 'application/json',
+          xhrFields: {
+            withCredentials: true
+          }
+        })
+        .done(function(data) {
+          $("<h1>").text("Appian Tasks").appendTo("#tasks");
+          $.each(data, function(i, item) {
+            $("<a>").attr("href", "#")
+            .text(item.DisplayName)
+            .click(function() { showTask(item.Id); })
+            .appendTo("#tasks");
+          });
+        });
+      }
+    </script>
+    <style>
+      body { background-color: #fff; font-family: Sans-Serif; width: 1000px; margin: 0 auto !important; }
+      h1 { color: #333; font-size: 24px; font-weight: bold; margin: 20px 0; }
+      #tasks a { font-size: 14px; line-height: 18px; font-weight: bold; color: #285fab; text-decoration: none; display: block; margin: 0 0 8px; }
+      #tasks a:hover, #tasks a:focus { color: #ee6615; }
+    </style>
   </head>
-  <body>
-    <appian-task taskId="145" />
+  <body onload="showTaskList();">
+    <div id="tasks"></div>
   </body>
 </html>
