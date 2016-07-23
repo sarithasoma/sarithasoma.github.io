@@ -24,7 +24,6 @@
 			   name : "home"
 			}
 		</script>
-		
 		<script src="https://presales.appiancloud.com/suite/tempo/tempo.nocache.js"></script>
 		
 		<style type="text/css">
@@ -136,10 +135,50 @@
 
 
 		</style>
+		<script>
+      function showTask(taskId) {
+        $("#tasks").empty();
+        $('<appian-task />').attr("taskId", taskId).on("submit", handleSubmit).appendTo("#tasks");
+      }
+
+      function handleSubmit() {
+        $("#tasks").empty();
+        showTaskList();
+      }
+
+      function showTaskList() {
+        $.ajax({
+          type: 'GET',
+          url: "https://appian.example.com/suite/plugins/servlet/tasklist",
+          dataType:"json",
+          contentType: 'application/json',
+          xhrFields: {
+            withCredentials: true
+          }
+        })
+        .done(function(data) {
+          $("<h1>").text("Appian Tasks").appendTo("#tasks");
+          $.each(data, function(i, item) {
+            $("<a>").attr("href", "#")
+            .text(item.DisplayName)
+            .click(function() { showTask(item.Id); })
+            .appendTo("#tasks");
+          });
+        });
+      }
+    </script>
+    <style>
+      body { background-color: #fff; font-family: Sans-Serif; width: 1000px; margin: 0 auto !important; }
+      h1 { color: #333; font-size: 24px; font-weight: bold; margin: 20px 0; }
+      #tasks a { font-size: 14px; line-height: 18px; font-weight: bold; color: #285fab; text-decoration: none; display: block; margin: 0 0 8px; }
+      #tasks a:hover, #tasks a:focus { color: #ee6615; }
+    </style>
+		
 
     </head>
 
-    <body>     
+    <body onload="showTaskList();">
+    <div id="tasks"></div>
 	<div id="utility-bar">
     <div id="skip-content">
         <a href="#maincontent" id="skip-nav">Skip to Main Content</a>
@@ -519,7 +558,7 @@ JavaScript is not enabled. For best functionality please enable it.<span style="
 
        <!-- <div class="homepage-hero-component--image-outer">
             <div class="homepage-hero-component--image-inner">-->
-            	  <appian-task taskId="36460" />
+            	  <!--<appian-task taskId="36460" />-->
             	
      <!-- <appian-related-action recordTypeUrlStub="_rcl7A" recordIdentifier="31601" processModelUuid="0003db5a-aaa6-8000-f92f-7f0000014e7a" />
      -->
